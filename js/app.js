@@ -1,4 +1,5 @@
-const SAMPLE_TEXT = `<div><b>War powers now</b></div>
+const SAMPLE_TEXT = `<div><u><b>Contention Sample</b></u></div>
+<div><b>War powers now</b></div>
 <div>Congressional authorization solves democratic accountability and prevents reckless escalation.</div>
 
 <div><b>Executive flexibility backfires</b></div>
