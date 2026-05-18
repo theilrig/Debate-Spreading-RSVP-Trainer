@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rapid Series Debate Trainer</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <div class="left">
+      <div class="title-row">
+        <h1>Rapid Series Debate Trainer</h1>
+        <button id="darkToggle" title="Toggle dark mode"></button>
+      </div>
+      <details class="format-help">
+        <summary><h2>Formatting Help</h2></summary>
+        <ol>
+          <li>Paste your case into the editor below.</li>
+          <li>Preferred format: put each tagline on its own line and make the entire tagline bold, including the author/date.</li>
+          <li>Put the card text on the next line as normal plain text, not bolded.</li>
+          <li>Repeat that pattern for every card: one bold tagline line, then one or more plain-text card lines.</li>
+          <li><strong>Contention names:</strong> bold <em>and</em> underline the contention header (e.g. <u><strong>Contention 1: Economic Growth</strong></u>). The app will flash it briefly as a section marker and skip straight to the next card — no RSVP.</li>
+          <li>If bold formatting does not survive paste, format each card as one paragraph: Tagline: card text. The colon tells the app where the tagline ends.</li>
+          <li>Click Parse after editing, then use Start to read through the case.</li>
+        </ol>
+      </details>
+
+      <div id="inputText" class="script-input" contenteditable="true"></div>
+
+      <div class="row">
+        <button id="parseBtn">Parse</button>
+        <button id="sampleBtn">Sample</button>
+        <button id="saveCaseBtn">Save Case</button>
+        <button id="saveSettingsBtn">Save Settings</button>
+      </div>
+
+      <div class="controls">
+        <div class="hero-controls">
+          <div class="hero-card">
+            <label class="hero-label" for="wpmRange">WPM <span id="wpmValue">300</span></label>
+            <input id="wpmRange" type="range" min="120" max="900" step="5" value="300" />
+          </div>
+          <div class="hero-card">
+            <label class="hero-label" for="bufferRange">Buffer Time <span class="label-note">(pause before next card)</span> <span id="bufferValue">0.35</span>s</label>
+            <input id="bufferRange" type="range" min="0" max="1500" step="25" value="350" />
+          </div>
+          <div class="hero-card">
+            <label class="hero-label" for="hangRange">Hang Time <span class="label-note">(pause after tagline)</span> <span id="hangValue">0.15</span>s</label>
+            <input id="hangRange" type="range" min="0" max="1500" step="25" value="150" />
+          </div>
+          <div class="hero-card">
+            <div class="metric-value">
+              <span>Total Time</span>
+              <strong id="totalTime">0:00</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="statusbar">
+        <div class="status-item">
+          <div class="status-title">Section</div>
+          <div class="status-value" id="sectionStatus">No section loaded</div>
+        </div>
+        <div class="status-item">
+          <div class="status-title">Progress</div>
+          <div class="status-value" id="progressStatus">0 / 0</div>
+        </div>
+      </div>
+
+      <div class="transport">
+        <button id="prevBtn">⟸ Prev</button>
+        <button id="startBtn">Start</button>
+        <button id="pauseBtn">Pause</button>
+        <button id="resumeBtn">Resume</button>
+        <button id="restartCardBtn">Restart Card</button>
+        <button id="restartAllBtn">Restart All</button>
+        <button id="nextBtn">Next ⟹</button>
+        <button id="fullscreenBtn">Fullscreen</button>
+        <button id="stopBtn">Stop</button>
+      </div>
+
+      <div class="viewer" id="viewer">
+        <div class="viewer-inner" id="viewerInner">
+          <div class="mode-pill" id="modeLabel">READY</div>
+          <div class="guide-line" id="guideLine" style="display:none;"></div>
+          <div id="displayArea"></div>
+          <div class="focus-tip" id="focusTip">Paste text, click Parse, then Start.</div>
+        </div>
+      </div>
+
+      <div class="footer-note">
+        Hotkeys: <span class="good">Space</span> start/pause/resume,
+        <span class="good">←/→</span> prev/next,
+        <span class="good">R</span> restart card,
+        <span class="good">Shift+R</span> restart all,
+        <span class="good">S</span> stop
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
