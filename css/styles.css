@@ -507,6 +507,7 @@ body.dark .footer-note { color: #8fa8be; }
   overflow-y: auto;
   border-radius: 6px;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
+  animation: formattingHelpFlash 3s ease-out 1;
 }
 
 /* ── Dark-mode toggle button ─────────────────── */
