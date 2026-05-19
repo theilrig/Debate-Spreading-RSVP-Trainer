@@ -51,21 +51,39 @@ body {
 }
 
 #sidebarToggle {
-  background: none;
-  border: 1px solid #dbe2ec;
+  position: absolute;
+  left: 420px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  width: 20px;
+  height: 52px;
+  background: white;
+  border: 1px solid #d9dee7;
   border-radius: 8px;
-  padding: 5px 10px;
-  font-size: 18px;
-  font-weight: 600;
-  color: #4c5563;
+  font-size: 13px;
+  font-weight: 800;
+  color: #667085;
   cursor: pointer;
-  line-height: 1;
-  flex-shrink: 0;
+  transition: left 0.25s ease, transform 0.25s ease, background 0.15s ease;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-#sidebarToggle:hover { background: #eef2f7; }
-body.dark #sidebarToggle { border-color: #2a3140; color: #a7b0bd; }
-body.dark #sidebarToggle:hover { background: #1d222b; }
+#sidebarToggle:hover { background: #f0f4f9; color: #273142; }
+
+.app.sidebar-collapsed #sidebarToggle {
+  left: 0;
+  transform: translate(0%, -50%);
+  border-radius: 0 8px 8px 0;
+  border-left: none;
+}
+
+body.dark #sidebarToggle { background: #1d222b; border-color: #2a3140; color: #a7b0bd; }
+body.dark #sidebarToggle:hover { background: #232937; color: #f5f7fa; }
 
 .right {
   background: #eef2f7;
