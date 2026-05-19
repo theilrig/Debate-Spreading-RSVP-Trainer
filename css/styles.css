@@ -32,7 +32,40 @@ body {
   border-right: 1px solid #d9dee7;
   padding: 16px;
   overflow: auto;
+  min-width: 0;
+  transition: padding 0.25s ease, border-width 0.25s ease;
 }
+
+.app {
+  transition: grid-template-columns 0.25s ease;
+}
+
+.app.sidebar-collapsed {
+  grid-template-columns: 0 1fr;
+}
+
+.app.sidebar-collapsed .left {
+  padding: 0;
+  border: none;
+  overflow: hidden;
+}
+
+#sidebarToggle {
+  background: none;
+  border: 1px solid #dbe2ec;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #4c5563;
+  cursor: pointer;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+#sidebarToggle:hover { background: #eef2f7; }
+body.dark #sidebarToggle { border-color: #2a3140; color: #a7b0bd; }
+body.dark #sidebarToggle:hover { background: #1d222b; }
 
 .right {
   background: #eef2f7;
