@@ -345,10 +345,9 @@ button:hover {
 }
 
 .statusbar {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
-  flex-wrap: wrap;
 }
 
 .status-item {
@@ -370,6 +369,36 @@ button:hover {
   text-overflow: ellipsis;
   max-width: 700px;
 }
+
+.status-select-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+}
+
+.status-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  width: 100%;
+}
+
+.status-select-row::after {
+  content: "▾";
+  font-size: 11px;
+  color: #9fb7d4;
+  pointer-events: none;
+}
+
+body.dark .status-select-row::after { color: #9fc4df; }
 
 .transport {
   display: grid;
@@ -494,6 +523,30 @@ button:hover {
 
 .pivot {
   color: var(--accent);
+}
+
+.scroll-track {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 0.7em;
+  white-space: pre;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-weight: 800;
+  font-size: 40px;
+  color: var(--text);
+  transition: transform 0.16s linear;
+}
+
+.scroll-word {
+  display: inline-block;
+  opacity: 0.55;
+  transition: opacity 0.16s linear, color 0.16s linear;
+}
+
+.scroll-word.active {
+  color: var(--accent);
+  opacity: 1;
 }
 
 .footer-note {

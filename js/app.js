@@ -36,6 +36,7 @@ const els = {
   fullscreenBtn: document.getElementById('fullscreenBtn'),
   stopBtn: document.getElementById('stopBtn'),
   modeLabel: document.getElementById('modeLabel'),
+  modeSelect: document.getElementById('modeSelect'),
   displayArea: document.getElementById('displayArea'),
   guideLine: document.getElementById('guideLine'),
   focusTip: document.getElementById('focusTip'),
@@ -52,7 +53,8 @@ const els = {
       timer: null,
       mode: 'idle', // idle, tagline, rsvp, paused, done
       lastModeBeforePause: 'idle',
-      isFullscreen: false
+      isFullscreen: false,
+      displayMode: 'word' // word, scroll
     };
 
 const ICON_MOON = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
@@ -89,11 +91,16 @@ function init() {
   const savedWpm = localStorage.getItem('pf-rsvp-wpm');
   const savedBufferMs = localStorage.getItem('pf-rsvp-buffer-ms');
   const savedHangMs = localStorage.getItem('pf-rsvp-hang-ms');
+  const savedDisplayMode = localStorage.getItem('pf-rsvp-display-mode');
 
   els.scriptInput.innerHTML = savedCase || SAMPLE_TEXT;
   if (savedWpm) els.wpmRange.value = savedWpm;
   if (savedBufferMs) els.bufferRange.value = savedBufferMs;
   if (savedHangMs) els.hangRange.value = savedHangMs;
+  if (savedDisplayMode === 'word' || savedDisplayMode === 'scroll') {
+    state.displayMode = savedDisplayMode;
+    els.modeSelect.value = savedDisplayMode;
+  }
   els.wpmValue.textContent = els.wpmRange.value;
   els.bufferValue.textContent = formatBufferSeconds(getNextCardGapMs());
   els.hangValue.textContent = formatBufferSeconds(getTaglineToCardGapMs());
@@ -320,6 +327,12 @@ function wireEvents() {
   els.hangRange.addEventListener('input', () => {
     els.hangValue.textContent = formatBufferSeconds(getTaglineToCardGapMs());
     updateTotalTime();
+  });
+
+  els.modeSelect.addEventListener('change', () => {
+    state.displayMode = els.modeSelect.value;
+    localStorage.setItem('pf-rsvp-display-mode', state.displayMode);
+    redrawCurrent();
   });
 
   els.prevBtn.addEventListener('click', prevSection);
@@ -552,6 +565,41 @@ function parseScript() {
       });
     }
 
+    function drawScroll(tokens, index, options = {}) {
+      const { showGuideLine = true } = options;
+      clearDisplay();
+      els.guideLine.style.display = showGuideLine ? 'block' : 'none';
+
+      const track = document.createElement('div');
+      track.className = 'scroll-track';
+
+      tokens.forEach((token, i) => {
+        const span = document.createElement('span');
+        span.className = 'scroll-word';
+        span.textContent = token;
+        if (i === index) {
+          span.classList.add('active');
+        } else if (i < index) {
+          const distance = index - i;
+          span.style.opacity = Math.max(0.06, 0.55 - distance * 0.12);
+        }
+        track.appendChild(span);
+      });
+
+      els.displayArea.appendChild(track);
+
+      requestAnimationFrame(() => {
+        const activeEl = track.children[index];
+        if (!activeEl) return;
+        const activeRect = activeEl.getBoundingClientRect();
+        const viewerRect = els.viewer.getBoundingClientRect();
+        const viewerCenter = viewerRect.left + viewerRect.width / 2;
+        const activeCenter = activeRect.left + activeRect.width / 2;
+        const dx = viewerCenter - activeCenter;
+        track.style.transform = `translateX(${dx}px)`;
+      });
+    }
+
     function getTokenDisplayLength(token) {
       return (token || '').replace(/[^A-Za-z]/g, '').length;
     }
@@ -771,7 +819,11 @@ function showNextToken() {
 
   const token = state.currentWords[state.wordIndex];
   setMode('rsvp');
-  drawRSVP(token, { showGuideLine: true });
+  if (state.displayMode === 'scroll') {
+    drawScroll(state.currentWords, state.wordIndex, { showGuideLine: true });
+  } else {
+    drawRSVP(token, { showGuideLine: true });
+  }
   updateStatus();
   const intervalMs = getIntervalMs(token, state.wordIndex, state.currentWords);
   state.wordIndex += 1;
@@ -873,7 +925,12 @@ function showNextToken() {
       if (!state.sections.length) return;
 
       if (state.mode === 'rsvp' && state.wordIndex > 0) {
-        drawRSVP(state.currentWords[Math.max(0, state.wordIndex - 1)], { showGuideLine: true });
+        const idx = Math.max(0, state.wordIndex - 1);
+        if (state.displayMode === 'scroll') {
+          drawScroll(state.currentWords, idx, { showGuideLine: true });
+        } else {
+          drawRSVP(state.currentWords[idx], { showGuideLine: true });
+        }
       } else if (state.mode === 'done') {
         drawPlain('Case Complete');
       } else if (state.mode === 'header') {
