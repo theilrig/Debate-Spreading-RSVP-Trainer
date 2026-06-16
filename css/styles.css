@@ -95,6 +95,7 @@ body.dark .app.sidebar-collapsed #sidebarToggle { border-right-color: #2a3140; }
   grid-template-rows: auto auto 1fr auto;
   gap: 12px;
   min-width: 0;
+  min-height: 0;
 }
 
 h1 {
@@ -416,7 +417,7 @@ body.dark .select-caret { color: #c4d0dc; }
   background: var(--bg);
   border-radius: 18px;
   border: 1px solid #1f2430;
-  min-height: 420px;
+  min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -462,6 +463,15 @@ body.dark .select-caret { color: #c4d0dc; }
   background: #2c3443;
   opacity: 0.95;
   pointer-events: none;
+}
+
+.guide-line--horizontal {
+  width: 100%;
+  height: 2px;
+  top: 50%;
+  left: 0;
+  transform: translateY(-1px);
+  background: var(--accent);
 }
 
 .mode-pill {
@@ -534,23 +544,20 @@ body.dark .select-caret { color: #c4d0dc; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.35em;
+  gap: 0;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-weight: 800;
   font-size: 40px;
   color: var(--text);
-  transition: transform 0.16s linear;
+  transition: transform 0.14s ease-out;
 }
 
 .scroll-word {
-  display: inline-block;
-  opacity: 0.55;
-  transition: opacity 0.16s linear, color 0.16s linear;
-}
-
-.scroll-word.active {
-  color: var(--accent);
-  opacity: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  transition: opacity 0.14s ease-out;
 }
 
 .footer-note {

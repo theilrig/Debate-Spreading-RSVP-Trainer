@@ -54,7 +54,8 @@ const els = {
       mode: 'idle', // idle, tagline, rsvp, paused, done
       lastModeBeforePause: 'idle',
       isFullscreen: false,
-      displayMode: 'word' // word, scroll
+      displayMode: 'word', // word, scroll
+      scrollTrack: null
     };
 
 const ICON_MOON = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
@@ -489,6 +490,8 @@ function parseScript() {
     function clearDisplay() {
       els.displayArea.innerHTML = '';
       els.guideLine.style.display = 'none';
+      els.guideLine.classList.remove('guide-line--horizontal');
+      state.scrollTrack = null;
     }
 
     function drawHeader(text) {
@@ -567,36 +570,52 @@ function parseScript() {
 
     function drawScroll(tokens, index, options = {}) {
       const { showGuideLine = true } = options;
-      clearDisplay();
+
+      // Horizontal red guide line pinned to viewer's true vertical center
       els.guideLine.style.display = showGuideLine ? 'block' : 'none';
+      els.guideLine.classList.toggle('guide-line--horizontal', showGuideLine);
+      if (showGuideLine) {
+        const vr = els.viewer.getBoundingClientRect();
+        const ir = document.getElementById('viewerInner').getBoundingClientRect();
+        els.guideLine.style.top = `${Math.round(vr.top + vr.height / 2 - ir.top)}px`;
+      }
 
-      const track = document.createElement('div');
-      track.className = 'scroll-track';
+      // Build the track once per card; reuse it on subsequent word advances
+      if (!state.scrollTrack || state.scrollTrack.parentNode !== els.displayArea) {
+        els.displayArea.innerHTML = '';
+        state.scrollTrack = document.createElement('div');
+        state.scrollTrack.className = 'scroll-track';
+        const slotH = Math.floor((els.viewer.clientHeight || 420) / 5);
+        tokens.forEach(token => {
+          const span = document.createElement('span');
+          span.className = 'scroll-word';
+          span.style.height = `${slotH}px`;
+          span.textContent = token;
+          state.scrollTrack.appendChild(span);
+        });
+        els.displayArea.appendChild(state.scrollTrack);
+      }
 
-      tokens.forEach((token, i) => {
-        const span = document.createElement('span');
-        span.className = 'scroll-word';
-        span.textContent = token;
+      // Opacity only — no red coloring
+      Array.from(state.scrollTrack.children).forEach((span, i) => {
         if (i === index) {
-          span.classList.add('active');
+          span.style.opacity = '1';
         } else if (i < index) {
-          const distance = index - i;
-          span.style.opacity = Math.max(0.06, 0.55 - distance * 0.12);
+          span.style.opacity = String(Math.max(0.08, 0.8 - (index - i) * 0.18));
+        } else {
+          span.style.opacity = '0.5';
         }
-        track.appendChild(span);
       });
 
-      els.displayArea.appendChild(track);
-
+      // Smoothly scroll active word to viewer vertical center
       requestAnimationFrame(() => {
-        const activeEl = track.children[index];
+        if (!state.scrollTrack) return;
+        const activeEl = state.scrollTrack.children[index];
         if (!activeEl) return;
         const activeRect = activeEl.getBoundingClientRect();
         const viewerRect = els.viewer.getBoundingClientRect();
-        const viewerCenter = viewerRect.top + viewerRect.height / 2;
-        const activeCenter = activeRect.top + activeRect.height / 2;
-        const dy = viewerCenter - activeCenter;
-        track.style.transform = `translateY(${dy}px)`;
+        const dy = (viewerRect.top + viewerRect.height / 2) - (activeRect.top + activeRect.height / 2);
+        state.scrollTrack.style.transform = `translateY(${dy}px)`;
       });
     }
 
