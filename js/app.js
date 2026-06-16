@@ -593,10 +593,10 @@ function parseScript() {
         if (!activeEl) return;
         const activeRect = activeEl.getBoundingClientRect();
         const viewerRect = els.viewer.getBoundingClientRect();
-        const viewerCenter = viewerRect.left + viewerRect.width / 2;
-        const activeCenter = activeRect.left + activeRect.width / 2;
-        const dx = viewerCenter - activeCenter;
-        track.style.transform = `translateX(${dx}px)`;
+        const viewerCenter = viewerRect.top + viewerRect.height / 2;
+        const activeCenter = activeRect.top + activeRect.height / 2;
+        const dy = viewerCenter - activeCenter;
+        track.style.transform = `translateY(${dy}px)`;
       });
     }
 
