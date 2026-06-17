@@ -556,6 +556,7 @@ body.dark .select-caret { color: #c4d0dc; }
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 80px;
 }
 
 .footer-note {

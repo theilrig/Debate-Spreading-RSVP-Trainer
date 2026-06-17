@@ -568,38 +568,22 @@ function parseScript() {
       });
     }
 
-    function drawScroll(tokens, index, options = {}) {
-      const { showGuideLine = true } = options;
-
-      // Horizontal red guide line pinned to viewer's true vertical center
-      els.guideLine.style.display = showGuideLine ? 'block' : 'none';
-      els.guideLine.classList.toggle('guide-line--horizontal', showGuideLine);
-      if (showGuideLine) {
-        const vr = els.viewer.getBoundingClientRect();
-        const ir = document.getElementById('viewerInner').getBoundingClientRect();
-        els.guideLine.style.top = `${Math.round(vr.top + vr.height / 2 - ir.top)}px`;
-      }
-
-      // Fixed slot height clamped so 5 words always fit readably on any screen
-      const slotH = Math.max(80, Math.min(120, Math.floor((els.viewer.clientHeight || 420) / 5)));
-
-      // Rebuild track if first call, if removed from DOM, or if screen size changed slot height
-      if (!state.scrollTrack || state.scrollTrack.parentNode !== els.displayArea || Number(state.scrollTrack.dataset.slotH) !== slotH) {
+    function drawScroll(tokens, index) {
+      // Build track once per card; reuse on subsequent word advances
+      if (!state.scrollTrack || state.scrollTrack.parentNode !== els.displayArea) {
         els.displayArea.innerHTML = '';
         state.scrollTrack = document.createElement('div');
         state.scrollTrack.className = 'scroll-track';
-        state.scrollTrack.dataset.slotH = slotH;
         tokens.forEach(token => {
           const span = document.createElement('span');
           span.className = 'scroll-word';
-          span.style.height = `${slotH}px`;
           span.textContent = token;
           state.scrollTrack.appendChild(span);
         });
         els.displayArea.appendChild(state.scrollTrack);
       }
 
-      // Smoothly scroll active word to viewer vertical center
+      // Credits-style: scroll active word to viewer vertical center so words flow upward
       requestAnimationFrame(() => {
         if (!state.scrollTrack) return;
         const activeEl = state.scrollTrack.children[index];
@@ -831,7 +815,7 @@ function showNextToken() {
   const token = state.currentWords[state.wordIndex];
   setMode('rsvp');
   if (state.displayMode === 'scroll') {
-    drawScroll(state.currentWords, state.wordIndex, { showGuideLine: true });
+    drawScroll(state.currentWords, state.wordIndex);
   } else {
     drawRSVP(token, { showGuideLine: true });
   }
@@ -938,7 +922,7 @@ function showNextToken() {
       if (state.mode === 'rsvp' && state.wordIndex > 0) {
         const idx = Math.max(0, state.wordIndex - 1);
         if (state.displayMode === 'scroll') {
-          drawScroll(state.currentWords, idx, { showGuideLine: true });
+          drawScroll(state.currentWords, idx);
         } else {
           drawRSVP(state.currentWords[idx], { showGuideLine: true });
         }
