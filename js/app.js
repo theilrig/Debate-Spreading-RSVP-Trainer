@@ -580,12 +580,15 @@ function parseScript() {
         els.guideLine.style.top = `${Math.round(vr.top + vr.height / 2 - ir.top)}px`;
       }
 
-      // Build the track once per card; reuse it on subsequent word advances
-      if (!state.scrollTrack || state.scrollTrack.parentNode !== els.displayArea) {
+      // Fixed slot height clamped so 5 words always fit readably on any screen
+      const slotH = Math.max(80, Math.min(120, Math.floor((els.viewer.clientHeight || 420) / 5)));
+
+      // Rebuild track if first call, if removed from DOM, or if screen size changed slot height
+      if (!state.scrollTrack || state.scrollTrack.parentNode !== els.displayArea || Number(state.scrollTrack.dataset.slotH) !== slotH) {
         els.displayArea.innerHTML = '';
         state.scrollTrack = document.createElement('div');
         state.scrollTrack.className = 'scroll-track';
-        const slotH = Math.floor((els.viewer.clientHeight || 420) / 5);
+        state.scrollTrack.dataset.slotH = slotH;
         tokens.forEach(token => {
           const span = document.createElement('span');
           span.className = 'scroll-word';
@@ -595,17 +598,6 @@ function parseScript() {
         });
         els.displayArea.appendChild(state.scrollTrack);
       }
-
-      // Opacity only — no red coloring
-      Array.from(state.scrollTrack.children).forEach((span, i) => {
-        if (i === index) {
-          span.style.opacity = '1';
-        } else if (i < index) {
-          span.style.opacity = String(Math.max(0.08, 0.8 - (index - i) * 0.18));
-        } else {
-          span.style.opacity = '0.5';
-        }
-      });
 
       // Smoothly scroll active word to viewer vertical center
       requestAnimationFrame(() => {
