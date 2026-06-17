@@ -569,6 +569,8 @@ function parseScript() {
     }
 
     function drawScroll(tokens, index) {
+      const SLOT_H = 80; // must match CSS .scroll-word height
+
       // Build track once per card; reuse on subsequent word advances
       if (!state.scrollTrack || state.scrollTrack.parentNode !== els.displayArea) {
         els.displayArea.innerHTML = '';
@@ -583,16 +585,25 @@ function parseScript() {
         els.displayArea.appendChild(state.scrollTrack);
       }
 
-      // Credits-style: scroll active word to viewer vertical center so words flow upward
-      requestAnimationFrame(() => {
-        if (!state.scrollTrack) return;
-        const activeEl = state.scrollTrack.children[index];
-        if (!activeEl) return;
-        const activeRect = activeEl.getBoundingClientRect();
-        const viewerRect = els.viewer.getBoundingClientRect();
-        const dy = (viewerRect.top + viewerRect.height / 2) - (activeRect.top + activeRect.height / 2);
-        state.scrollTrack.style.transform = `translateY(${dy}px)`;
-      });
+      if (!('baseY' in state.scrollTrack.dataset)) {
+        // First word only: measure word[0]'s natural position and center it.
+        // All subsequent words march upward by SLOT_H each — no re-centering.
+        requestAnimationFrame(() => {
+          if (!state.scrollTrack) return;
+          const word0 = state.scrollTrack.children[0];
+          if (!word0) return;
+          const viewerRect = els.viewer.getBoundingClientRect();
+          const word0Rect = word0.getBoundingClientRect();
+          const baseY = Math.round(
+            (viewerRect.top + viewerRect.height / 2) - (word0Rect.top + word0Rect.height / 2)
+          );
+          state.scrollTrack.dataset.baseY = baseY;
+          state.scrollTrack.style.transform = `translateY(${baseY - index * SLOT_H}px)`;
+        });
+      } else {
+        const baseY = Number(state.scrollTrack.dataset.baseY);
+        state.scrollTrack.style.transform = `translateY(${baseY - index * SLOT_H}px)`;
+      }
     }
 
     function getTokenDisplayLength(token) {
