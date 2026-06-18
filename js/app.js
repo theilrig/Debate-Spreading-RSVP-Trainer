@@ -579,7 +579,11 @@ function parseScript() {
         tokens.forEach(token => {
           const span = document.createElement('span');
           span.className = 'scroll-word';
-          span.textContent = token;
+          const pi = getPivotIndex(token);
+          const pre = document.createElement('span'); pre.className = 'prefix'; pre.textContent = token.slice(0, pi);
+          const piv = document.createElement('span'); piv.className = 'pivot';  piv.textContent = token.slice(pi, pi + 1);
+          const suf = document.createElement('span'); suf.className = 'suffix'; suf.textContent = token.slice(pi + 1);
+          span.appendChild(pre); span.appendChild(piv); span.appendChild(suf);
           state.scrollTrack.appendChild(span);
         });
         els.displayArea.appendChild(state.scrollTrack);
