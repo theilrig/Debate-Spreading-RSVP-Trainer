@@ -559,6 +559,36 @@ body.dark .select-caret { color: #c4d0dc; }
   height: 80px;
 }
 
+.slide-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 20px;
+}
+
+.slide-context {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.slide-left  { justify-content: flex-end; }
+.slide-right { justify-content: flex-start; }
+
+.slide-ctx-word {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-weight: 800;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+
 .footer-note {
   font-size: 13px;
   color: #516072;

@@ -568,6 +568,57 @@ function parseScript() {
       });
     }
 
+    function drawSlide(words, index) {
+      clearDisplay();
+      els.guideLine.style.display = 'none';
+
+      const token = words[index];
+      const pi = getPivotIndex(token);
+      const mainSize = Math.min(getRSVPFontSize(token), 56);
+      const ctxSize = 26;
+
+      const wrap = document.createElement('div');
+      wrap.className = 'slide-wrap';
+
+      // Left: [prev-2]  [prev-1]  (prev-1 sits closest to center)
+      const left = document.createElement('div');
+      left.className = 'slide-context slide-left';
+      for (let i = Math.max(0, index - 2); i < index; i++) {
+        const s = document.createElement('span');
+        s.className = 'slide-ctx-word';
+        s.style.fontSize = `${ctxSize}px`;
+        s.style.opacity = i === index - 1 ? '0.5' : '0.3';
+        s.textContent = words[i];
+        left.appendChild(s);
+      }
+
+      // Center: current word with red pivot letter
+      const center = document.createElement('div');
+      center.className = 'word-wrap';
+      center.style.fontSize = `${mainSize}px`;
+      const pre = document.createElement('span'); pre.className = 'prefix'; pre.textContent = token.slice(0, pi);
+      const piv = document.createElement('span'); piv.className = 'pivot';  piv.textContent = token.slice(pi, pi + 1);
+      const suf = document.createElement('span'); suf.className = 'suffix'; suf.textContent = token.slice(pi + 1);
+      center.appendChild(pre); center.appendChild(piv); center.appendChild(suf);
+
+      // Right: [next-1]  [next-2]  (next-1 sits closest to center)
+      const right = document.createElement('div');
+      right.className = 'slide-context slide-right';
+      for (let i = index + 1; i <= Math.min(words.length - 1, index + 2); i++) {
+        const s = document.createElement('span');
+        s.className = 'slide-ctx-word';
+        s.style.fontSize = `${ctxSize}px`;
+        s.style.opacity = i === index + 1 ? '0.5' : '0.3';
+        s.textContent = words[i];
+        right.appendChild(s);
+      }
+
+      wrap.appendChild(left);
+      wrap.appendChild(center);
+      wrap.appendChild(right);
+      els.displayArea.appendChild(wrap);
+    }
+
     function drawScroll(tokens, index) {
       const SLOT_H = 80; // must match CSS .scroll-word height
 
@@ -832,7 +883,7 @@ function showNextToken() {
   if (state.displayMode === 'scroll') {
     drawScroll(state.currentWords, state.wordIndex);
   } else {
-    drawRSVP(token, { showGuideLine: true });
+    drawSlide(state.currentWords, state.wordIndex);
   }
   updateStatus();
   const intervalMs = getIntervalMs(token, state.wordIndex, state.currentWords);
@@ -939,7 +990,7 @@ function showNextToken() {
         if (state.displayMode === 'scroll') {
           drawScroll(state.currentWords, idx);
         } else {
-          drawRSVP(state.currentWords[idx], { showGuideLine: true });
+          drawSlide(state.currentWords, idx);
         }
       } else if (state.mode === 'done') {
         drawPlain('Case Complete');
