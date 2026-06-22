@@ -586,7 +586,7 @@ body.dark .select-caret { color: #c4d0dc; }
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 160px;
+  max-width: 200px;
 }
 
 .footer-note {

@@ -570,12 +570,12 @@ function parseScript() {
 
     function drawSlide(words, index) {
       clearDisplay();
-      els.guideLine.style.display = 'none';
+      els.guideLine.style.display = 'block';
 
       const token = words[index];
       const pi = getPivotIndex(token);
       const mainSize = Math.min(getRSVPFontSize(token), 56);
-      const ctxSize = 26;
+      const ctxSize = 36;
 
       const wrap = document.createElement('div');
       wrap.className = 'slide-wrap';
