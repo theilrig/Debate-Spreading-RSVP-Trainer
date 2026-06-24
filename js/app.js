@@ -569,57 +569,42 @@ function parseScript() {
     }
 
     function drawSlide(words, index) {
-      clearDisplay();
       els.guideLine.style.display = 'block';
 
-      const token = words[index];
-      const pi = getPivotIndex(token);
-      const mainSize = Math.min(getRSVPFontSize(token), 56);
-      const ctxSize = 36;
-
-      const wrap = document.createElement('div');
-      wrap.className = 'slide-wrap';
-
-      function makeCtxWord(word, opacity) {
-        const s = document.createElement('span');
-        s.className = 'slide-ctx-word';
-        s.style.fontSize = `${ctxSize}px`;
-        s.style.opacity = opacity;
-        const ci = getPivotIndex(word);
-        const cpre = document.createElement('span'); cpre.className = 'prefix'; cpre.textContent = word.slice(0, ci);
-        const cpiv = document.createElement('span'); cpiv.className = 'pivot';  cpiv.textContent = word.slice(ci, ci + 1);
-        const csuf = document.createElement('span'); csuf.className = 'suffix'; csuf.textContent = word.slice(ci + 1);
-        s.appendChild(cpre); s.appendChild(cpiv); s.appendChild(csuf);
-        return s;
+      // Build 5 fixed slots once; on subsequent calls just update their text.
+      // Slots never move — only their content changes, so there's no sliding effect.
+      let wrap = els.displayArea.querySelector('.slide-wrap');
+      if (!wrap) {
+        clearDisplay();
+        wrap = document.createElement('div');
+        wrap.className = 'slide-wrap';
+        ['slide-slot slide-far-ctx', 'slide-slot slide-near-ctx',
+         'slide-slot slide-center-word',
+         'slide-slot slide-near-ctx', 'slide-slot slide-far-ctx'].forEach(cls => {
+          const slot = document.createElement('div');
+          slot.className = cls;
+          const pre = document.createElement('span'); pre.className = 'prefix';
+          const piv = document.createElement('span'); piv.className = 'pivot';
+          const suf = document.createElement('span'); suf.className = 'suffix';
+          slot.appendChild(pre); slot.appendChild(piv); slot.appendChild(suf);
+          wrap.appendChild(slot);
+        });
+        els.displayArea.appendChild(wrap);
       }
 
-      // Left: [prev-2]  [prev-1]  (prev-1 sits closest to center)
-      const left = document.createElement('div');
-      left.className = 'slide-context slide-left';
-      for (let i = Math.max(0, index - 2); i < index; i++) {
-        left.appendChild(makeCtxWord(words[i], i === index - 1 ? '0.5' : '0.3'));
-      }
+      // Update center font size for current word length
+      const centerSlot = wrap.children[2];
+      centerSlot.style.fontSize = `${Math.min(getRSVPFontSize(words[index]), 52)}px`;
 
-      // Center: current word with red pivot letter
-      const center = document.createElement('div');
-      center.className = 'word-wrap';
-      center.style.fontSize = `${mainSize}px`;
-      const pre = document.createElement('span'); pre.className = 'prefix'; pre.textContent = token.slice(0, pi);
-      const piv = document.createElement('span'); piv.className = 'pivot';  piv.textContent = token.slice(pi, pi + 1);
-      const suf = document.createElement('span'); suf.className = 'suffix'; suf.textContent = token.slice(pi + 1);
-      center.appendChild(pre); center.appendChild(piv); center.appendChild(suf);
-
-      // Right: [next-1]  [next-2]  (next-1 sits closest to center)
-      const right = document.createElement('div');
-      right.className = 'slide-context slide-right';
-      for (let i = index + 1; i <= Math.min(words.length - 1, index + 2); i++) {
-        right.appendChild(makeCtxWord(words[i], i === index + 1 ? '0.5' : '0.3'));
-      }
-
-      wrap.appendChild(left);
-      wrap.appendChild(center);
-      wrap.appendChild(right);
-      els.displayArea.appendChild(wrap);
+      // Fill each slot with the word at its offset, or blank if out of range
+      Array.from(wrap.children).forEach((slot, si) => {
+        const wi = index + (si - 2); // offsets: -2, -1, 0, +1, +2
+        const word = (wi >= 0 && wi < words.length) ? words[wi] : '';
+        const pi = word ? getPivotIndex(word) : 0;
+        slot.querySelector('.prefix').textContent = word ? word.slice(0, pi)      : '';
+        slot.querySelector('.pivot').textContent  = word ? word.slice(pi, pi + 1) : '';
+        slot.querySelector('.suffix').textContent = word ? word.slice(pi + 1)     : '';
+      });
     }
 
     function drawScroll(tokens, index) {

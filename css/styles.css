@@ -559,32 +559,28 @@ body.dark .select-caret { color: #c4d0dc; }
   height: 80px;
 }
 
+/* Slide mode: 5 fixed-position slots that never move — only their text changes */
 .slide-wrap {
   display: flex;
   align-items: center;
-  justify-content: center;
   width: 100%;
-  gap: 20px;
 }
 
-.slide-context {
-  flex: 1;
+.slide-slot {
   display: flex;
   align-items: center;
-  gap: 14px;
-  min-width: 0;
+  justify-content: center;
   overflow: hidden;
-}
-
-.slide-left  { justify-content: flex-end; }
-.slide-right { justify-content: flex-start; }
-
-.slide-ctx-word {
+  white-space: nowrap;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-weight: 800;
   color: var(--text);
-  white-space: nowrap;
+  line-height: 1;
 }
+
+.slide-far-ctx  { flex: 1;   font-size: 22px; opacity: 0.12; }
+.slide-near-ctx { flex: 1.5; font-size: 28px; opacity: 0.20; }
+.slide-center-word { flex: 3; overflow: visible; }
 
 .footer-note {
   font-size: 13px;
