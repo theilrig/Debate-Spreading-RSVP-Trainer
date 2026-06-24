@@ -580,16 +580,24 @@ function parseScript() {
       const wrap = document.createElement('div');
       wrap.className = 'slide-wrap';
 
+      function makeCtxWord(word, opacity) {
+        const s = document.createElement('span');
+        s.className = 'slide-ctx-word';
+        s.style.fontSize = `${ctxSize}px`;
+        s.style.opacity = opacity;
+        const ci = getPivotIndex(word);
+        const cpre = document.createElement('span'); cpre.className = 'prefix'; cpre.textContent = word.slice(0, ci);
+        const cpiv = document.createElement('span'); cpiv.className = 'pivot';  cpiv.textContent = word.slice(ci, ci + 1);
+        const csuf = document.createElement('span'); csuf.className = 'suffix'; csuf.textContent = word.slice(ci + 1);
+        s.appendChild(cpre); s.appendChild(cpiv); s.appendChild(csuf);
+        return s;
+      }
+
       // Left: [prev-2]  [prev-1]  (prev-1 sits closest to center)
       const left = document.createElement('div');
       left.className = 'slide-context slide-left';
       for (let i = Math.max(0, index - 2); i < index; i++) {
-        const s = document.createElement('span');
-        s.className = 'slide-ctx-word';
-        s.style.fontSize = `${ctxSize}px`;
-        s.style.opacity = i === index - 1 ? '0.5' : '0.3';
-        s.textContent = words[i];
-        left.appendChild(s);
+        left.appendChild(makeCtxWord(words[i], i === index - 1 ? '0.5' : '0.3'));
       }
 
       // Center: current word with red pivot letter
@@ -605,12 +613,7 @@ function parseScript() {
       const right = document.createElement('div');
       right.className = 'slide-context slide-right';
       for (let i = index + 1; i <= Math.min(words.length - 1, index + 2); i++) {
-        const s = document.createElement('span');
-        s.className = 'slide-ctx-word';
-        s.style.fontSize = `${ctxSize}px`;
-        s.style.opacity = i === index + 1 ? '0.5' : '0.3';
-        s.textContent = words[i];
-        right.appendChild(s);
+        right.appendChild(makeCtxWord(words[i], i === index + 1 ? '0.5' : '0.3'));
       }
 
       wrap.appendChild(left);
