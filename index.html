@@ -115,6 +115,7 @@
   </div>
 
   <script src="js/app.js"></script>
+  <script>fetch('/.netlify/functions/track-visit').then(r=>r.json()).then(d=>{ window.totalVisits = d.visits; }).catch(()=>{});</script>
   <script data-goatcounter="https://debate-trainer.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
