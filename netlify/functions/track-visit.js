@@ -36,7 +36,7 @@ exports.handler = async function () {
       method: 'PUT',
       headers: { ...headers, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        message: `visit ${visitCount} [skip netlify]`,
+        message: `visit ${visitCount} [skip ci]`,
         content: Buffer.from(newContent).toString('base64'),
         ...(sha && { sha }),
       }),
