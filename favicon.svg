@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 108" fill="none">
+  <!-- Top crown/button -->
+  <rect x="40" y="1" width="20" height="10" rx="5" fill="#212121"/>
+  <!-- Stem -->
+  <rect x="45.5" y="10" width="9" height="11" fill="#212121"/>
+
+  <!-- Speed lines (left, 3 stacked rounded bars) -->
+  <line x1="4"  y1="40" x2="27" y2="40" stroke="#212121" stroke-width="7" stroke-linecap="round"/>
+  <line x1="1"  y1="54" x2="26" y2="54" stroke="#212121" stroke-width="7" stroke-linecap="round"/>
+  <line x1="7"  y1="68" x2="27" y2="68" stroke="#212121" stroke-width="7" stroke-linecap="round"/>
+
+  <!-- Clock ring -->
+  <circle cx="58" cy="63" r="39" stroke="#212121" stroke-width="8"/>
+
+  <!-- Clock hand (needle toward ~1 o'clock) -->
+  <line x1="58" y1="63" x2="81" y2="37" stroke="#212121" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- Pivot -->
+  <circle cx="58" cy="63" r="5.5" fill="#212121"/>
+  <circle cx="58" cy="63" r="2.8" fill="white"/>
+</svg>
